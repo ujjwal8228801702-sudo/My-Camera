@@ -127,10 +127,40 @@ private fun MyCameraScreen() {
         if (hasPermission) {
             AndroidView(factory = { previewView }, modifier = Modifier.fillMaxSize())
             if (showGrid) GridOverlay()
+            Column(
+                Modifier.align(Alignment.CenterEnd).padding(end = 12.dp)
+                    .background(Color(0x990A0D16), MaterialTheme.shapes.extraLarge)
+                    .padding(horizontal = 7.dp, vertical = 12.dp),
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                Text("${zoom.toInt()}x", color = Color(0xFFFFD45A), fontSize = 13.sp)
+                Slider(
+                    value = zoom.coerceIn(1f, 5f),
+                    onValueChange = { zoom = it; cameraControl?.setZoomRatio(it) },
+                    valueRange = 1f..5f,
+                    modifier = Modifier.width(150.dp).height(34.dp).padding(horizontal = 0.dp)
+                        .then(Modifier),
+                    colors = SliderDefaults.colors(
+                        thumbColor = Color(0xFFFFD45A),
+                        activeTrackColor = Color(0xFFFFD45A),
+                        inactiveTrackColor = Color.LightGray
+                    )
+                )
+                listOf(1f, 2f, 3f, 5f).forEach { level ->
+                    Text(
+                        "${level.toInt()}x",
+                        color = if (zoom.toInt() == level.toInt()) Color(0xFFFFD45A) else Color.White,
+                        fontSize = 11.sp,
+                        modifier = Modifier.clickable {
+                            zoom = level; cameraControl?.setZoomRatio(level)
+                        }.padding(vertical = 5.dp)
+                    )
+                }
+            }
             Column(Modifier.align(Alignment.TopCenter).fillMaxWidth().padding(top = 18.dp, start = 18.dp, end = 18.dp)) {
                 Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.SpaceBetween, modifier = Modifier.fillMaxWidth()) {
                     RoundControl(icon = if (flashOn) Icons.Default.FlashOn else Icons.Default.FlashOff, label = "Flash") { flashOn = !flashOn }
-                    Text("MY CAMERA", color = Color.White, fontSize = 17.sp, letterSpacing = 3.sp)
+                    Text("MY CAMERA", color = Color(0xFFFFD45A), fontSize = 18.sp, letterSpacing = 3.sp)
                     RoundControl(icon = Icons.Default.Cameraswitch, label = "Switch") {
                         if (recording != null) Toast.makeText(context, "Recording ke dauran camera switch nahi kar sakte", Toast.LENGTH_SHORT).show()
                         else frontCamera = !frontCamera
@@ -151,14 +181,14 @@ private fun MyCameraScreen() {
                     }
                 }
             }
-            Column(Modifier.align(Alignment.BottomCenter).fillMaxWidth().background(Color(0xD9080808)).padding(bottom = 20.dp, top = 12.dp), horizontalAlignment = Alignment.CenterHorizontally) {
+            Column(Modifier.align(Alignment.BottomCenter).fillMaxWidth().background(Color(0xE6090C14)).padding(bottom = 20.dp, top = 12.dp), horizontalAlignment = Alignment.CenterHorizontally) {
                 Row(
                     modifier = Modifier.fillMaxWidth().horizontalScroll(rememberScrollState()),
                     horizontalArrangement = Arrangement.spacedBy(16.dp, Alignment.CenterHorizontally),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     cameraModes.forEach { mode ->
-                        Text(mode, color = if (selectedMode == mode) Color(0xFFFFD45A) else Color.LightGray,
+                        Text(mode, color = if (selectedMode == mode) Color(0xFFFFD45A) else Color(0xFFB8C0CE),
                             fontSize = 11.sp, modifier = Modifier.clickable {
                                 if (recording != null) {
                                     Toast.makeText(context, "Pehle recording band karein", Toast.LENGTH_SHORT).show()
@@ -215,15 +245,8 @@ private fun MyCameraScreen() {
                         Icon(Icons.Default.GridOn, contentDescription = "Grid", tint = if (showGrid) Color(0xFFFFD45A) else Color.White, modifier = Modifier.size(28.dp))
                     }
                 }
-                Spacer(Modifier.height(10.dp))
-                Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.Center) {
-                    Text("1x", color = Color.White, fontSize = 13.sp)
-                    Slider(value = zoom.coerceIn(1f, 5f), onValueChange = {
-                        zoom = it; cameraControl?.setZoomRatio(it)
-                    }, valueRange = 1f..5f, modifier = Modifier.width(180.dp),
-                        colors = SliderDefaults.colors(thumbColor = Color.White, activeTrackColor = Color(0xFFFFD45A), inactiveTrackColor = Color.Gray))
-                    Text("5x", color = Color.White, fontSize = 13.sp)
-                }
+                Spacer(Modifier.height(4.dp))
+                Text("ZOOM", color = Color(0xFFFFD45A), fontSize = 9.sp, letterSpacing = 2.sp)
             }
         } else {
             Column(Modifier.align(Alignment.Center).padding(28.dp), horizontalAlignment = Alignment.CenterHorizontally) {
