@@ -51,6 +51,7 @@ class MainActivity : ComponentActivity() {
 @Composable
 private fun MyCameraScreen() {
     val context = LocalContext.current
+    val previewView = remember { PreviewView(context).apply { scaleType = PreviewView.ScaleType.FILL_CENTER } }
     val lifecycleOwner = LocalLifecycleOwner.current
     var hasPermission by remember {
         mutableStateOf(ContextCompat.checkSelfPermission(context, Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED)
@@ -88,7 +89,7 @@ private fun MyCameraScreen() {
                 imageCapture = capture
                 cameraControl = camera.cameraControl
                 camera.cameraControl.setZoomRatio(zoom.coerceAtLeast(1f))
-                preview.setSurfaceProvider(previewViewFor(context).surfaceProvider)
+                preview.setSurfaceProvider(previewView.surfaceProvider)
             } catch (e: Exception) {
                 Toast.makeText(context, "Camera start nahi ho paya: ${e.localizedMessage}", Toast.LENGTH_LONG).show()
             }
@@ -98,11 +99,9 @@ private fun MyCameraScreen() {
     Box(Modifier.fillMaxSize().background(Color.Black)) {
         if (hasPermission) {
             AndroidView(
-                factory = { previewViewFor(it) },
+                factory = { previewView },
                 modifier = Modifier.fillMaxSize()
-            ) { view ->
-                // Preview surface is attached by CameraX when the camera is bound.
-            }
+            )
             if (showGrid) GridOverlay()
             Column(Modifier.align(Alignment.TopCenter).fillMaxWidth().padding(top = 18.dp, start = 22.dp, end = 22.dp)) {
                 Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.SpaceBetween, modifier = Modifier.fillMaxWidth()) {
@@ -181,10 +180,6 @@ private fun MyCameraScreen() {
         }
     }
 }
-
-private fun previewViewFor(context: Context): PreviewView =
-    (context as? MainActivity)?.let { (it as? MainActivity)?.let { _ -> PreviewView(context).apply { scaleType = PreviewView.ScaleType.FILL_CENTER } } }
-        ?: PreviewView(context).apply { scaleType = PreviewView.ScaleType.FILL_CENTER }
 
 private fun takePhoto(context: Context, capture: ImageCapture?, onSaved: (Uri) -> Unit) {
     if (capture == null) {
