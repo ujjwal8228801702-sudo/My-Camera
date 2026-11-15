@@ -38,6 +38,7 @@ import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
@@ -134,18 +135,19 @@ private fun MyCameraScreen() {
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 Text("${zoom.toInt()}x", color = Color(0xFFFFD45A), fontSize = 13.sp)
-                Slider(
-                    value = zoom.coerceIn(1f, 5f),
-                    onValueChange = { zoom = it; cameraControl?.setZoomRatio(it) },
-                    valueRange = 1f..5f,
-                    modifier = Modifier.width(150.dp).height(34.dp).padding(horizontal = 0.dp)
-                        .then(Modifier),
-                    colors = SliderDefaults.colors(
-                        thumbColor = Color(0xFFFFD45A),
-                        activeTrackColor = Color(0xFFFFD45A),
-                        inactiveTrackColor = Color.LightGray
+                Box(Modifier.width(34.dp).height(150.dp), contentAlignment = Alignment.Center) {
+                    Slider(
+                        value = zoom.coerceIn(1f, 5f),
+                        onValueChange = { zoom = it; cameraControl?.setZoomRatio(it) },
+                        valueRange = 1f..5f,
+                        modifier = Modifier.width(140.dp).rotate(270f),
+                        colors = SliderDefaults.colors(
+                            thumbColor = Color(0xFFFFD45A),
+                            activeTrackColor = Color(0xFFFFD45A),
+                            inactiveTrackColor = Color.LightGray
+                        )
                     )
-                )
+                }
                 listOf(1f, 2f, 3f, 5f).forEach { level ->
                     Text(
                         "${level.toInt()}x",
